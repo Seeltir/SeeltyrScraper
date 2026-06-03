@@ -1,0 +1,7 @@
+venv/
+.venv/
+build/
+dist/
+documentacion_scraper.md
+leads_potenciales.xlsx
+__pycache__/
