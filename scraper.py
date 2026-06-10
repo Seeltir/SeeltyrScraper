@@ -13,7 +13,7 @@ def mostrar_banner():
     ╚════██║██╔══╝  ██╔══╝  ██║     ██║     ╚██╔╝  ██╔══██╗
     ███████║███████╗███████╗███████╗██║      ██║   ██║  ██║
     ╚══════╝╚══════╝╚══════╝╚══════╝╚═╝      ╚═╝   ╚═╝  ╚═╝
-              GOOGLE MAPS LEAD GENERATOR v2.1
+              GOOGLE MAPS LEAD GENERATOR v3
     """
     print(banner)
     print("-" * 60)
@@ -63,32 +63,28 @@ def scraper_informativo(termino_busqueda, cantidad_a_buscar):
         intentos_sin_nuevos = 0
         
         while True:
-            # Contamos cuántos elementos han cargado en el DOM hasta ahora
             enlaces_actuales = page.locator("a.hfpxzc").count()
             
-            # Si ya llegamos a la cantidad que pediste, rompemos el bucle
             if enlaces_actuales >= cantidad_a_buscar:
                 break
                 
-            # Si hicimos scroll pero la cantidad no aumentó
             if enlaces_actuales == enlaces_previos:
                 intentos_sin_nuevos += 1
-                if intentos_sin_nuevos > 3: # Si falla 3 veces seguidas, es que ya no hay más resultados en Google Maps
+                if intentos_sin_nuevos > 3: 
                     print("⚠️ Se llegó al final de la lista de resultados.")
                     break
             else:
-                intentos_sin_nuevos = 0 # Reiniciamos el contador si encontramos nuevos
+                intentos_sin_nuevos = 0 
                 
             enlaces_previos = enlaces_actuales
             
-            # El truco: Ponemos el mouse sobre el ÚLTIMO elemento de la lista y scrolleamos hacia abajo
             try:
                 ultimo_enlace = page.locator("a.hfpxzc").nth(enlaces_actuales - 1)
                 ultimo_enlace.hover()
-                page.mouse.wheel(0, 2000) # Gira la rueda hacia abajo
-                page.wait_for_timeout(1500) # Le damos 1.5 segundos a Google para que cargue los nuevos
+                page.mouse.wheel(0, 2000) 
+                page.wait_for_timeout(1500) 
             except:
-                break # Por si falla al intentar hacer hover
+                break 
 
         enlaces = page.locator("a.hfpxzc").all()
         datos_validados = []
