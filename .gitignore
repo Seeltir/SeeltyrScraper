@@ -5,3 +5,5 @@ dist/
 documentacion_scraper.md
 leads_potenciales.xlsx
 __pycache__/
+
+repomix-output.xml
