@@ -13,13 +13,12 @@ def mostrar_banner():
     ╚════██║██╔══╝  ██╔══╝  ██║     ██║     ╚██╔╝  ██╔══██╗
     ███████║███████╗███████╗███████╗██║      ██║   ██║  ██║
     ╚══════╝╚══════╝╚══════╝╚══════╝╚═╝      ╚═╝   ╚═╝  ╚═╝
-              GOOGLE MAPS LEAD GENERATOR v3
+              GOOGLE MAPS LEAD GENERATOR v3.1
     """
     print(banner)
     print("-" * 60)
 
 def obtener_ruta_recursos(relative_path):
-    """ Obtiene la ruta absoluta para recursos, necesaria para PyInstaller """
     try:
         base_path = sys._MEIPASS
     except Exception:
@@ -27,9 +26,6 @@ def obtener_ruta_recursos(relative_path):
     return os.path.join(base_path, relative_path)
 
 def scraper_informativo(termino_busqueda, cantidad_a_buscar):
-    SOLO_SIN_WEB = True    
-    NECESITA_TEL = True    
-
     with sync_playwright() as p:
         print(f"\n🚀 Iniciando búsqueda de: {termino_busqueda}")
         
@@ -124,12 +120,12 @@ def scraper_informativo(termino_busqueda, cantidad_a_buscar):
                 elif "facebook.com" in url_baja:
                     es_facebook = True
 
-            cumple = True
-            if SOLO_SIN_WEB and web is not None and not (es_instagram or es_facebook): 
-                cumple = False
-            
-            if NECESITA_TEL and tel is None: 
-                cumple = False
+            cumple = False
+            if web is not None:
+                cumple = True
+            else:
+                if tel is not None:
+                    cumple = True
 
             if cumple:
                 if es_instagram:
@@ -139,18 +135,19 @@ def scraper_informativo(termino_busqueda, cantidad_a_buscar):
                 elif web is None:
                     status_web = "No tiene"
                 else:
-                    status_web = web
+                    status_web = "Tiene Web Profesional"
 
                 print(f"   ✅ Guardado. (Reseñas: {resena_status} | Web: {status_web})")
+                
                 datos_validados.append({
                     "Nombre": nombre,
-                    "Teléfono": tel,
+                    "Teléfono": tel if tel else "No tiene",
                     "Web": status_web,
+                    "Url": web if web else "No tiene",
                     "Reseñas": resena_status
                 })
             else:
-                razon = "Tiene Web Profesional" if (web and not (es_instagram or es_facebook)) else "No tiene Teléfono"
-                print(f"   ❌ Saltado por: {razon}")
+                print("   ❌ Saltado por: No tiene Web ni Teléfono")
 
         if datos_validados:
             df = pd.DataFrame(datos_validados)
